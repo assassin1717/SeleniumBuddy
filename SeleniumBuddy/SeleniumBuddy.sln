@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36408.4 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeleniumBuddy", "SeleniumBuddy.csproj", "{16370744-EB3C-4434-9228-8367F4C00211}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeleniumBuddyTests", "..\SeleniumBuddyTests\SeleniumBuddyTests.csproj", "{7A36607B-8CFE-4EFC-88CA-B238584BBBA7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{16370744-EB3C-4434-9228-8367F4C00211}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16370744-EB3C-4434-9228-8367F4C00211}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16370744-EB3C-4434-9228-8367F4C00211}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16370744-EB3C-4434-9228-8367F4C00211}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A36607B-8CFE-4EFC-88CA-B238584BBBA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A36607B-8CFE-4EFC-88CA-B238584BBBA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A36607B-8CFE-4EFC-88CA-B238584BBBA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A36607B-8CFE-4EFC-88CA-B238584BBBA7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E01D3BC7-CC69-4A07-8D38-192F206BFE0F}
+	EndGlobalSection
+EndGlobal

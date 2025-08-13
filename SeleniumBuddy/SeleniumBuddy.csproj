@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<PackageId>TravelDocFaker</PackageId>
+		<Version>0.1.0</Version>
+		<Authors>Tiago Andre</Authors>
+		<Description>.NET library to generate TD3 MRZ, fake persons and passport images (testing only)</Description>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/assassin1717/SeleniumBuddy</RepositoryUrl>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Selenium.Support" Version="4.35.0" />
+		<PackageReference Include="Selenium.WebDriver" Version="4.35.0" />
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+</Project>
