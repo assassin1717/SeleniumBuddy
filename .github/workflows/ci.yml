@@ -32,7 +32,7 @@ jobs:
         run: dotnet build ./SeleniumBuddy/SeleniumBuddy.csproj -c Release --no-restore
 
       - name: Publish test binaries
-        run: dotnet publish ./SeleniumBuddyTesting/SeleniumBuddyTesting.csproj -c Release -o ./artifacts
+        run: dotnet publish ./SeleniumBuddyTests/SeleniumBuddyTests.csproj -c Release -o ./artifacts
 
       - name: Upload test binaries
         uses: actions/upload-artifact@v4
@@ -65,7 +65,7 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          TESTDLL=$(find ./artifacts -name "SeleniumBuddyTesting.dll" | head -n 1)
+          TESTDLL=$(find ./artifacts -name "SeleniumBuddyTests.dll" | head -n 1)
           if [ -z "$TESTDLL" ]; then echo "Test DLL not found"; exit 1; fi
           dotnet vstest "$TESTDLL" --logger:"trx;LogFileName=test-results.trx" /collect:"XPlat Code Coverage"
 
@@ -74,7 +74,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $testDll = Get-ChildItem -Recurse -Filter SeleniumBuddyTesting.dll -Path ./artifacts | Select-Object -First 1
+          $testDll = Get-ChildItem -Recurse -Filter SeleniumBuddyTests.dll -Path ./artifacts | Select-Object -First 1
           if (-not $testDll) { Write-Error "Test DLL not found"; exit 1 }
           dotnet vstest $testDll.FullName --logger:"trx;LogFileName=test-results.trx" /collect:"XPlat Code Coverage"
 
