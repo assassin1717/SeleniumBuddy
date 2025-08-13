@@ -34,7 +34,7 @@ namespace SeleniumBuddy.Extensions
         /// <summary>
         /// Clears the element and types the given text. Uses a JS fallback if .Clear() fails.
         /// </summary>
-        public static void SetText(this IWebElement element, string text, IScriptExecutor? js = null, bool clearBefore = true, CancellationToken ct = default)
+        public static void SetText(this IWebElement element, string text, IScriptExecutor js = null, bool clearBefore = true, CancellationToken ct = default)
         {
             if (element is null) throw new ArgumentNullException(nameof(element));
             if (clearBefore)

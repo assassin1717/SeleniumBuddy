@@ -18,20 +18,20 @@ namespace SeleniumBuddy.Core
                 ?? throw new NotSupportedException("Driver does not support JavaScript execution (IJavaScriptExecutor).");
         }
 
-        public object? Execute(string script, CancellationToken ct = default, params object[] args)
+        public object Execute(string script, CancellationToken ct = default, params object[] args)
         {
             if (script is null) throw new ArgumentNullException(nameof(script));
             ct.ThrowIfCancellationRequested();
             return _js.ExecuteScript(script, args);
         }
 
-        public T? Execute<T>(string script, CancellationToken ct = default, params object[] args)
+        public T Execute<T>(string script, CancellationToken ct = default, params object[] args)
         {
             var result = Execute(script, ct, args);
             if (result is null) return default;
             try
             {
-                return (T?)Convert.ChangeType(result, typeof(T));
+                return (T)Convert.ChangeType(result, typeof(T));
             }
             catch
             {

@@ -6,9 +6,9 @@
     public interface IScriptExecutor
     {
         /// <summary>Executes arbitrary script, returning a raw object (driver-specific).</summary>
-        object? Execute(string script, CancellationToken ct = default, params object[] args);
+        object Execute(string script, CancellationToken ct = default, params object[] args);
 
         /// <summary>Executes arbitrary script and converts the result to <typeparamref name="T"/> when possible.</summary>
-        T? Execute<T>(string script, CancellationToken ct = default, params object[] args);
+        T Execute<T>(string script, CancellationToken ct = default, params object[] args);
     }
 }

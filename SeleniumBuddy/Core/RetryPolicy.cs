@@ -19,7 +19,7 @@ namespace SeleniumBuddy.Core
         public async Task ExecuteAsync(Func<CancellationToken, Task> action, CancellationToken ct = default)
         {
             _ = action ?? throw new ArgumentNullException(nameof(action));
-            await ExecuteAsync<object?>(async c =>
+            await ExecuteAsync<object>(async c =>
             {
                 await action(c).ConfigureAwait(false);
                 return null;
@@ -31,7 +31,7 @@ namespace SeleniumBuddy.Core
             _ = action ?? throw new ArgumentNullException(nameof(action));
 
             var attempts = Math.Max(0, _options.RetryAttempts) + 1; // initial try + retries
-            Exception? last = null;
+            Exception last = null;
 
             for (int tryIndex = 0; tryIndex < attempts; tryIndex++)
             {

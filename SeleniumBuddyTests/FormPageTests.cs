@@ -20,7 +20,7 @@ namespace SeleniumBuddyTests
         public void SetUp()
         {
             var chrome = new ChromeOptions();
-            // chrome.AddArgument("--headless=new");
+            chrome.AddArgument("--headless=new");
             chrome.AddArgument("--window-size=1280,900");
 
             _driver = new ChromeDriver(chrome);

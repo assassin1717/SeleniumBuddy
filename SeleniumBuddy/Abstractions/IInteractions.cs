@@ -28,7 +28,7 @@ namespace SeleniumBuddy.Abstractions
         /// <summary>
         /// Selects an option on a native &lt;select&gt; element. Exactly one selector must be provided.
         /// </summary>
-        void SelectNative(By selectBy, string? byVisibleText = null, string? byValue = null, int? byIndex = null, TimeSpan? timeout = null, CancellationToken ct = default);
+        void SelectNative(By selectBy, string byVisibleText = null, string byValue = null, int? byIndex = null, TimeSpan? timeout = null, CancellationToken ct = default);
 
         /// <summary>Clears the element's value using JS as a fallback when .Clear() fails.</summary>
         void ClearWithFallback(By by, CancellationToken ct = default);

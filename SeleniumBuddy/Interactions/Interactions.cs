@@ -16,7 +16,7 @@ namespace SeleniumBuddy.Interactions
         private readonly IWaiter _waiter;
         private readonly IScriptExecutor _js;
         private readonly IRetryPolicy _retry;
-        private readonly IScreenshotService? _shots;
+        private readonly IScreenshotService _shots;
         private readonly ISeleniumBuddyOptions _options;
 
         public Interactions(
@@ -25,7 +25,7 @@ namespace SeleniumBuddy.Interactions
             IScriptExecutor js,
             IRetryPolicy retry,
             ISeleniumBuddyOptions options,
-            IScreenshotService? screenshots = null)
+            IScreenshotService screenshots = null)
         {
             _driver = driver ?? throw new ArgumentNullException(nameof(driver));
             _waiter = waiter ?? throw new ArgumentNullException(nameof(waiter));
