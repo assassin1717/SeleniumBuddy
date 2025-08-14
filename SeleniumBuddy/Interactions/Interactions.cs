@@ -84,7 +84,9 @@ namespace SeleniumBuddy.Interactions
                     var el = _driver.FindElements(by).FirstOrDefault(e => SafeDisplayed(e));
                     if (el is not null) return true;
                 }
-                catch (WebDriverException) { }
+                catch (WebDriverException ex) {
+                    Debug.WriteLine($"[SeleniumBuddy] IsVisible - Element is not Visible: {ex.GetType().Name}: {ex.Message}");
+                }
 
                 Waiter.Sleep(_options.PollingInterval, ct);
             }
@@ -102,17 +104,17 @@ namespace SeleniumBuddy.Interactions
                     var existsAndVisible = _driver.FindElements(by).Any(e => SafeDisplayed(e));
                     if (!existsAndVisible) return true;
                 }
-                catch (WebDriverException)
+                catch (WebDriverException ex)
                 {
-                    // If querying throws transiently, treat as not yet invisible → keep polling
+                    Debug.WriteLine($"[SeleniumBuddy] IsInvisible - Element is Visible: {ex.GetType().Name}: {ex.Message}");
                 }
                 Waiter.Sleep(_options.PollingInterval, ct);
             }
             return false;
         }
 
-        public bool SelectFromPopup(By openerBy, By optionsBy, string searchText, TimeSpan? timeout = null, CancellationToken ct = default)
-    => ExecuteWithRescueBool(nameof(SelectFromPopup), openerBy, async token =>
+        public void SelectFromPopup(By openerBy, By optionsBy, string searchText, TimeSpan? timeout = null, CancellationToken ct = default)
+    => ExecuteWithRescue(nameof(SelectFromPopup), openerBy, async token =>
     {
         if (string.IsNullOrWhiteSpace(searchText))
             throw new ArgumentException("searchText must be non-empty.", nameof(searchText));
@@ -122,6 +124,7 @@ namespace SeleniumBuddy.Interactions
 
         var opener = _waiter.UntilClickable(openerBy, to, _options.PollingInterval, token);
         opener.Click();
+        bool isOptionClicked = false;
 
         while (DateTime.UtcNow <= until)
         {
@@ -143,14 +146,18 @@ namespace SeleniumBuddy.Interactions
                 {
                     _js.Execute("arguments[0].scrollIntoView(true);", token, match);
                     match.Click();
-                    return true;
+                    isOptionClicked = true;
                 }
             }
-
-            Waiter.Sleep(_options.PollingInterval, token);
         }
 
-        return false;
+        if (!isOptionClicked)
+        {
+            throw new NotFoundException($"No visible elements found matching {Describe(optionsBy)} with the text '{searchText}' within the popup after clicking {Describe(openerBy)}.");
+        }
+
+        Waiter.Sleep(_options.PollingInterval, token);
+        await Task.CompletedTask;
     }, ct);
 
 
@@ -188,7 +195,7 @@ namespace SeleniumBuddy.Interactions
                     try
                     {
                         var safe = Sanitize($"{DateTime.UtcNow:yyyyMMdd_HHmmss}_{actionName}_{Describe(by)}");
-                        shotPath = _shots.Capture(safe, ct);
+                        shotPath = _shots.Capture(safe, true, ct);
                     }
                     catch (Exception capEx)
                     {
@@ -196,31 +203,6 @@ namespace SeleniumBuddy.Interactions
                     }
                 }
 
-                throw new InteractionFailedException(actionName, by, shotPath, ex);
-            }
-        }
-
-        private bool ExecuteWithRescueBool(string actionName, By by, Func<CancellationToken, Task<bool>> action, CancellationToken ct)
-        {
-            try
-            {
-                return _retry.ExecuteAsync(action, ct).GetAwaiter().GetResult();
-            }
-            catch (Exception ex)
-            {
-                string shotPath = null;
-                if (_options.ScreenshotOnFailure && _shots is not null)
-                {
-                    try
-                    {
-                        var safe = Sanitize($"{DateTime.UtcNow:yyyyMMdd_HHmmss}_{actionName}_{Describe(by)}");
-                        shotPath = _shots.Capture(safe, ct);
-                    }
-                    catch (Exception capEx)
-                    {
-                        Trace.WriteLine($"[SeleniumBuddy] Screenshot capture failed: {capEx.GetType().Name}: {capEx.Message}");
-                    }
-                }
                 throw new InteractionFailedException(actionName, by, shotPath, ex);
             }
         }
@@ -252,21 +234,30 @@ namespace SeleniumBuddy.Interactions
                 var t = e.Text;
                 if (!string.IsNullOrWhiteSpace(t)) return t.Trim();
             }
-            catch { /* ignore transient */ }
+            catch (Exception capEx)
+            {
+                Debug.WriteLine($"[SeleniumBuddy] GetVisibleText - text not found: {capEx.Message}");
+            }
 
             try
             {
                 var aria = e.GetAttribute("aria-label");
                 if (!string.IsNullOrWhiteSpace(aria)) return aria.Trim();
             }
-            catch { /* ignore transient */ }
+            catch (Exception capEx)
+            {
+                Debug.WriteLine($"[SeleniumBuddy] GetVisibleText - aria-label not found: {capEx.Message}");
+            }
 
             try
             {
                 var title = e.GetAttribute("title");
                 if (!string.IsNullOrWhiteSpace(title)) return title.Trim();
             }
-            catch { /* ignore transient */ }
+            catch (Exception capEx)
+            {
+                Debug.WriteLine($"[SeleniumBuddy] GetVisibleText - title not found: {capEx.Message}");
+            }
 
             return string.Empty;
         }

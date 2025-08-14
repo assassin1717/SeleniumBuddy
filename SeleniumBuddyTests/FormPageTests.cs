@@ -63,21 +63,21 @@ namespace SeleniumBuddyTests
             _buddy.TypeWhenReady(By.CssSelector("[data-testid='input-name'] > input"), "Tiago Barbosa");
             _buddy.TypeWhenReady(By.CssSelector("[data-testid='input-email'] > input"), "tiago@example.com");
             _buddy.TypeWhenReady(By.CssSelector("[data-testid='input-password'] > input"), "HelloFromSeleniumBuddy!");
-            var selected = _buddy.SelectFromPopup(
+            _buddy.SelectFromPopup(
                 openerBy: By.CssSelector("[data-testid='dropdown-role']"),
                 optionsBy: By.CssSelector("[data-testid='dropdown-role'] .item"),
-                searchText: "Developer",
-                timeout: TimeSpan.FromSeconds(8));
-            Assert.IsTrue(selected, "Expected to select 'Developer' from the dropdown.");
+                searchText: "Developer");
             _buddy.ClickWhenVisible(By.CssSelector("[data-testid='radio-male']"));
             _buddy.ClickWhenVisible(By.CssSelector("[data-testid='checkbox-terms']"));
 
-            _buddy.IsInvisible(By.CssSelector("[data-testid='success-message']"));
+            var visibility = _buddy.IsInvisible(By.CssSelector("[data-testid='success-message']"));
+            Assert.IsTrue(visibility, "Success message should not be visible before submission.");
 
             _buddy.ScrollIntoView(By.CssSelector("[data-testid='submit-button']"));
             _buddy.ClickWhenVisible(By.CssSelector("[data-testid='submit-button']"));
 
-            _buddy.IsVisible(By.CssSelector("[data-testid='success-message']"));
+            visibility = _buddy.IsVisible(By.CssSelector("[data-testid='success-message']"));
+            Assert.IsTrue(visibility, "Success message should be visible before submission.");
 
             Waiter.Sleep(TimeSpan.FromSeconds(5));
         }
@@ -94,9 +94,12 @@ namespace SeleniumBuddyTests
 
             _buddy.ClickWhenVisible(By.CssSelector("[data-testid='submit-button']"));
 
-            _buddy.IsInvisible(By.CssSelector("#root > div.ui.container > div > form:nth-child(2) > div:nth-child(1) > div.ui.pointing.above.prompt.label"));
-            _buddy.IsInvisible(By.CssSelector("#root > div.ui.container > div > form:nth-child(2) > div:nth-child(2) > div.ui.pointing.above.prompt.label"));
-            _buddy.IsVisible(By.CssSelector("#root > div.ui.container > div > form:nth-child(2) > div:nth-child(3) > div.ui.pointing.above.prompt.label"));    
+            var visibility = _buddy.IsInvisible(By.CssSelector("#root > div.ui.container > div > form:nth-child(2) > div:nth-child(1) > div.ui.pointing.above.prompt.label"));
+            Assert.IsTrue(visibility, "Error tooltip should not be visible before submission.");
+            visibility = _buddy.IsInvisible(By.CssSelector("#root > div.ui.container > div > form:nth-child(2) > div:nth-child(2) > div.ui.pointing.above.prompt.label"));
+            Assert.IsTrue(visibility, "Error tooltip should not be visible before submission.");
+            visibility = _buddy.IsVisible(By.CssSelector("#root > div.ui.container > div > form:nth-child(2) > div:nth-child(3) > div.ui.pointing.above.prompt.label"));
+            Assert.IsTrue(visibility, "Error tooltip should be visible before submission.");
         }
     }
 }

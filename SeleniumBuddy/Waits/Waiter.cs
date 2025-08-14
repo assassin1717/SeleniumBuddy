@@ -153,6 +153,17 @@ namespace SeleniumBuddy.Waits
             || ex is ElementClickInterceptedException
             || ex is TimeoutException;
 
+        /// <summary>
+        /// Pauses execution for the specified <paramref name="interval"/>.
+        /// If no <paramref name="ct"/> (cancellation token) is provided, a standard <see cref="Thread.Sleep"/> is used.
+        /// If a cancellation token is provided, the method will wait using the token's <see cref="WaitHandle"/> 
+        /// and exit early if cancellation is requested or the handle is disposed.
+        /// </summary>
+        /// <param name="interval">The duration to pause execution. If less than or equal to zero, the method returns immediately.</param>
+        /// <param name="ct">
+        /// Optional <see cref="CancellationToken"/>.  
+        /// When provided, allows the wait to be interrupted if cancellation is requested.
+        /// </param>
         public static void Sleep(TimeSpan interval, CancellationToken? ct = null)
         {
             if (interval <= TimeSpan.Zero) return;

@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium.DevTools.V137.Audits;
 using SeleniumBuddy.Abstractions;
 
 namespace SeleniumBuddy.Core
@@ -22,16 +23,18 @@ namespace SeleniumBuddy.Core
             _directory = directory ?? Path.Combine(AppContext.BaseDirectory, "Screenshots");
         }
 
-        public string Capture(string namePrefix = null, CancellationToken ct = default)
+        public string Capture(string namePrefix = null, bool isFail = false, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
             if (_taker is null) return null;
 
-            Directory.CreateDirectory(_directory);
+            var realDirectory = isFail ? Path.Combine(_directory, "Failed") : _directory;
+
+            Directory.CreateDirectory(realDirectory);
 
             var prefix = string.IsNullOrWhiteSpace(namePrefix) ? "screenshot" : namePrefix!.Trim();
             var file = $"{prefix}_{DateTime.UtcNow:yyyyMMdd_HHmmss_fff}.png";
-            var fullPath = Path.Combine(_directory, Sanitize(file));
+            var fullPath = Path.Combine(realDirectory, Sanitize(file));
 
             var shot = _taker.GetScreenshot();
             shot.SaveAsFile(fullPath);
