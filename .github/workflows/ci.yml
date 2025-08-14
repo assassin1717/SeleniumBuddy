@@ -33,7 +33,7 @@ jobs:
 
       # Publica binários de teste para artifacts (como já usavas)
       - name: Publish test binaries
-        run: dotnet publish ./SeleniumBuddy.Tests/SeleniumBuddy.Tests.csproj -c Release -o ./artifacts
+        run: dotnet publish ./SeleniumBuddyTests/SeleniumBuddyTests.csproj -c Release -o ./artifacts
 
       # --- PATCH 1: garantir permissões de execução no Linux antes do upload ---
       - name: Make selenium-manager executable (Linux) before upload
@@ -93,7 +93,7 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          TESTDLL=$(find ./artifacts -name "SeleniumBuddy.Tests.dll" | head -n 1)
+          TESTDLL=$(find ./artifacts -name "SeleniumBuddyTests.dll" | head -n 1)
           if [ -z "$TESTDLL" ]; then echo "Test DLL not found"; exit 1; fi
           dotnet vstest "$TESTDLL" --logger:"trx;LogFileName=test-results.trx" /collect:"XPlat Code Coverage"
 
@@ -101,7 +101,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $testDll = Get-ChildItem -Recurse -Filter SeleniumBuddy.Tests.dll -Path ./artifacts | Select-Object -First 1
+          $testDll = Get-ChildItem -Recurse -Filter SeleniumBuddyTests.dll -Path ./artifacts | Select-Object -First 1
           if (-not $testDll) { Write-Error "Test DLL not found"; exit 1 }
           dotnet vstest $testDll.FullName --logger:"trx;LogFileName=test-results.trx" /collect:"XPlat Code Coverage"
 
