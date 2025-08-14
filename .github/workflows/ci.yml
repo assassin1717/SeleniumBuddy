@@ -1,4 +1,4 @@
-name: CI (build + test + bump)
+name: CI (build + test + bump + publish)
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: write # necessário para o job 'bump' fazer commit+tag
 
 jobs:
   build:
@@ -31,8 +31,23 @@ jobs:
       - name: Build
         run: dotnet build ./SeleniumBuddy/SeleniumBuddy.csproj -c Release --no-restore
 
+      # Publica binários de teste para artifacts (como já usavas)
       - name: Publish test binaries
-        run: dotnet publish ./SeleniumBuddyTests/SeleniumBuddyTests.csproj -c Release -o ./artifacts
+        run: dotnet publish ./SeleniumBuddy.Tests/SeleniumBuddy.Tests.csproj -c Release -o ./artifacts
+
+      # --- PATCH 1: garantir permissões de execução no Linux antes do upload ---
+      - name: Make selenium-manager executable (Linux) before upload
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -e
+          SEL_MGR=$(find ./artifacts -path "*/runtimes/linux/native/selenium-manager" | head -n 1 || true)
+          if [ -n "$SEL_MGR" ]; then
+            chmod +x "$SEL_MGR"
+            echo "chmod +x $SEL_MGR"
+          else
+            echo "selenium-manager not found under artifacts (ok if resolved at runtime)"
+          fi
 
       - name: Upload test binaries
         uses: actions/upload-artifact@v4
@@ -60,21 +75,33 @@ jobs:
           name: ${{ matrix.os }}-test-binaries
           path: ./artifacts
 
-      # Linux: usar bash + find
+      # --- PATCH 2: garantir permissões de execução no Linux antes de testar ---
+      - name: Ensure selenium-manager is executable (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -e
+          SEL_MGR=$(find ./artifacts -path "*/runtimes/linux/native/selenium-manager" | head -n 1 || true)
+          if [ -n "$SEL_MGR" ]; then
+            chmod +x "$SEL_MGR"
+            echo "chmod +x $SEL_MGR"
+          else
+            echo "selenium-manager not found under artifacts; Selenium will try system path"
+          fi
+
       - name: Run tests (Linux)
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          TESTDLL=$(find ./artifacts -name "SeleniumBuddyTests.dll" | head -n 1)
+          TESTDLL=$(find ./artifacts -name "SeleniumBuddy.Tests.dll" | head -n 1)
           if [ -z "$TESTDLL" ]; then echo "Test DLL not found"; exit 1; fi
           dotnet vstest "$TESTDLL" --logger:"trx;LogFileName=test-results.trx" /collect:"XPlat Code Coverage"
 
-      # Windows: usar PowerShell + Get-ChildItem
       - name: Run tests (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $testDll = Get-ChildItem -Recurse -Filter SeleniumBuddyTests.dll -Path ./artifacts | Select-Object -First 1
+          $testDll = Get-ChildItem -Recurse -Filter SeleniumBuddy.Tests.dll -Path ./artifacts | Select-Object -First 1
           if (-not $testDll) { Write-Error "Test DLL not found"; exit 1 }
           dotnet vstest $testDll.FullName --logger:"trx;LogFileName=test-results.trx" /collect:"XPlat Code Coverage"
 
@@ -98,11 +125,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Setup .NET (optional but harmless)
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.0.x"
+          persist-credentials: true
 
       - name: Run bump-version-ci.ps1
         shell: pwsh
