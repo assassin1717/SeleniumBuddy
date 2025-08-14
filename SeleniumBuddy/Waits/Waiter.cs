@@ -27,7 +27,7 @@ namespace SeleniumBuddy.Waits
             var deadline = DateTime.UtcNow + (timeout ?? _options.DefaultTimeout);
             var interval = poll ?? _options.PollingInterval;
 
-            Exception? last = null;
+            Exception last = null;
 
             while (DateTime.UtcNow <= deadline)
             {
@@ -55,7 +55,7 @@ namespace SeleniumBuddy.Waits
             var deadline = DateTime.UtcNow + (timeout ?? _options.DefaultTimeout);
             var interval = poll ?? _options.PollingInterval;
 
-            Exception? last = null;
+            Exception last = null;
 
             while (DateTime.UtcNow <= deadline)
             {
@@ -83,7 +83,7 @@ namespace SeleniumBuddy.Waits
             var deadline = DateTime.UtcNow + (timeout ?? _options.DefaultTimeout);
             var interval = poll ?? _options.PollingInterval;
 
-            Exception? last = null;
+            Exception last = null;
 
             while (DateTime.UtcNow <= deadline)
             {
@@ -110,7 +110,7 @@ namespace SeleniumBuddy.Waits
             var deadline = DateTime.UtcNow + (timeout ?? _options.DefaultTimeout);
             var interval = poll ?? _options.PollingInterval;
 
-            Exception? last = null;
+            Exception last = null;
 
             while (DateTime.UtcNow <= deadline)
             {
@@ -189,7 +189,7 @@ namespace SeleniumBuddy.Waits
             return s;
         }
 
-        private static string BuildTimeoutMessage(string what, TimeSpan? timeout, Exception? last) =>
+        private static string BuildTimeoutMessage(string what, TimeSpan? timeout, Exception last) =>
             last is null
                 ? $"Timed out waiting for {what} after {(timeout ?? TimeSpan.Zero).TotalSeconds:0.#}s."
                 : $"Timed out waiting for {what} after {(timeout ?? TimeSpan.Zero).TotalSeconds:0.#}s. Last error: {last.GetType().Name}: {last.Message}";
